@@ -2,6 +2,7 @@ import os, sys, time
 from tqdm import tqdm
 from platform import system as my_system 
 
+# This class here is my own argument parser
 class FoxParse:
     def __init__(self):
         self.args = {}
