@@ -1,4 +1,4 @@
-import os, sys, time, threading
+import os, sys, time
 from tqdm import tqdm
 from platform import system as my_system 
 
@@ -35,7 +35,10 @@ class WordLocator:
         self.folder = folder
         self.xfolder = xfolder
         self.word = word
+        self.results = []
     
+    # use to exclude folders if argument -x is provided
+    # use to filter excluded folder provided by -x argument
     def __filter(self, fn):
         dirs = fn.split('/')
         if(self.xfolder in dirs):
@@ -49,17 +52,28 @@ class WordLocator:
             for line in open(fn).read().splitlines():
                 line_no+=1
                 if(self.word in line):
-                    print(f"Line [{line_no}]\t File: {fn}")
+                    self.results.append(f"Line [{line_no}]\tFile Path: {fn}")
         except Exception as err:
             pass
 
+
     def find(self):
-        for root, dirs, files in os.walk(self.folder):
+        for root, dirs, files in tqdm(os.walk(self.folder),desc="Scanning Files"):
             path = root.split(os.sep)
             for file in files:
-                file = "./"+"/".join(path)+"/"+file
-                # print("/".join(path)+str(file))
-                self.__word(file)
+                filename = "./"+"/".join(path)+"/"+file
+                self.__word(filename)
+        
+        # clear()
+        term_width = int(os.get_terminal_size().columns)
+        print("="*term_width)
+        print("\tResults")
+        print("="*term_width,"\n")
+        if(len(self.results) > 0):
+            for result in self.results:
+                print(result)
+        else:
+            print("No results!/Word not found!")
 
 
 def clear():
