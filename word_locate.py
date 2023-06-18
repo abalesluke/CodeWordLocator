@@ -1,4 +1,5 @@
-import os, sys
+import os, sys, time, threading
+from tqdm import tqdm
 from platform import system as my_system 
 
 class FoxParse:
@@ -50,7 +51,7 @@ class WordLocator:
                 if(self.word in line):
                     print(f"Line [{line_no}]\t File: {fn}")
         except Exception as err:
-            pass    
+            pass
 
     def find(self):
         for root, dirs, files in os.walk(self.folder):
@@ -62,7 +63,7 @@ class WordLocator:
 
 
 def clear():
-    if(my_system == "Windows"):
+    if(my_system() == "Windows"):
         os.system("cls")
     else:
         os.system("clear")
@@ -80,7 +81,7 @@ def help(err_msg=''):
     print(f"""
 Arguments:
 
-    -d       |     : Directory (Where to find the word)[Default directory = './']
+    -d       |     : Directory (Where to find the word)[Default directory = './'
     -w       |     : Word (to find)
     -x       |     : Exclude a folder to be scanned
 Usage: python3 {os.path.basename(__file__)} -d <target_directory> -w "<word_to_find>"
