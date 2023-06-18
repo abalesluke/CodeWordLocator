@@ -25,4 +25,4 @@
 
 
 
-> (hayst nakakatamad mag gawa ng docs)
+> (hayst nakakatamad mag gawa ng docs.....mag contribute kayo ng docsss 🥴🤣😂)
