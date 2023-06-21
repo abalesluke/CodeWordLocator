@@ -1,4 +1,4 @@
-import os, sys, time
+import os, sys, time, colorama
 from tqdm import tqdm
 from platform import system as my_system 
 
@@ -37,6 +37,7 @@ class WordLocator:
         self.xfolder = xfolder
         self.word = word
         self.results = []
+        self.f_results = []
     
     # use to exclude folders if argument -x is provided
     # use to filter excluded folder provided by -x argument
@@ -44,8 +45,16 @@ class WordLocator:
         dirs = fn.split('/')
         if(self.xfolder in dirs):
             return True
+    
+    def __highlight(self, key1, key2):
+        return key1.replace(key2,f"{colorama.Back.YELLOW}{key2}{colorama.Style.RESET_ALL}")
 
-    def __word(self, fn):
+    def __fromFolder(self, fp, fn):
+        if(self.word == dir):
+            folderpath = self.__highlight(fp, fn)
+            self.f_results.append(f"Folder path: {folderpath}")
+
+    def __fromFile(self, fn):
         line_no = 0
         if(self.__filter(fn)):
             return
@@ -61,15 +70,18 @@ class WordLocator:
     def find(self):
         for root, dirs, files in tqdm(os.walk(self.folder),desc="Scanning Files"):
             path = root.split(os.sep)
+
+            for dir in dirs:
+                foldername = "./"+"/".join(path)+dir
+                self.__fromFolder(foldername, dir)
+
             for file in files:
                 filename = "./"+"/".join(path)+"/"+file
-                self.__word(filename)
-        
-        # clear()
-        term_width = int(os.get_terminal_size().columns)
-        print("="*term_width)
-        print("\tResults")
-        print("="*term_width,"\n")
+                self.__fromFile(filename)
+
+        text = "[-Results-]"
+        divider = "="*int((os.get_terminal_size().columns/2)-int(len(text))/2)
+        print(f"{divider}{text}{divider}")
         if(len(self.results) > 0):
             for result in self.results:
                 print(result)
@@ -127,3 +139,4 @@ if(__name__=="__main__"):
 
     search = WordLocator(folder, xfolder, args.get('-w'))
     search.find()
+
