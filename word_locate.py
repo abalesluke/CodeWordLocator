@@ -36,8 +36,8 @@ class WordLocator:
         self.folder = folder
         self.xfolder = xfolder
         self.word = word
-        self.results = []
-        self.f_results = []
+        self.file_results = []
+        self.folder_results = []
     
     # use to exclude folders if argument -x is provided
     # use to filter excluded folder provided by -x argument
@@ -50,9 +50,9 @@ class WordLocator:
         return key1.replace(key2,f"{colorama.Back.YELLOW}{key2}{colorama.Style.RESET_ALL}")
 
     def __fromFolder(self, fp, fn):
-        if(self.word == dir):
+        if(self.word == fn):
             folderpath = self.__highlight(fp, fn)
-            self.f_results.append(f"Folder path: {folderpath}")
+            self.folder_results.append(f"Folder path: {folderpath}")
 
     def __fromFile(self, fn):
         line_no = 0
@@ -62,9 +62,28 @@ class WordLocator:
             for line in open(fn).read().splitlines():
                 line_no+=1
                 if(self.word in line):
-                    self.results.append(f"Line [{line_no}]\tFile Path: {fn}")
+                    self.file_results.append(f"Line [{line_no}]\tFile Path: {fn}")
         except Exception as err:
             pass
+    
+    def __divider_line(self, label):
+        divider = "☶"*int((os.get_terminal_size().columns/2)-int(len(label))/2)
+        return f"\n{divider}{label}{divider}"
+ 
+    def __view_results(self):
+        emptyResults = True
+        if(len(self.file_results) > 0):
+            emptyResults = False
+            print(self.__divider_line("[-Results-for-matching-word-in-a-file-]"))
+            for res in self.file_results:
+                print(res)
+        if(len(self.folder_results) > 0):
+            emptyResults = False
+            print(self.__divider_line("[-Results-for-matching-folder-name-]"))
+            for res in self.folder_results:
+                print(res)
+        if(emptyResults):
+            print("No results!/Word not found!")
 
 
     def find(self):
@@ -72,21 +91,14 @@ class WordLocator:
             path = root.split(os.sep)
 
             for dir in dirs:
-                foldername = "./"+"/".join(path)+dir
+                foldername = "./"+"/".join(path)+"./"+dir
                 self.__fromFolder(foldername, dir)
 
             for file in files:
-                filename = "./"+"/".join(path)+"/"+file
+                filename = "./"+"/".join(path)+"./"+file
                 self.__fromFile(filename)
 
-        text = "[-Results-]"
-        divider = "="*int((os.get_terminal_size().columns/2)-int(len(text))/2)
-        print(f"{divider}{text}{divider}")
-        if(len(self.results) > 0):
-            for result in self.results:
-                print(result)
-        else:
-            print("No results!/Word not found!")
+        self.__view_results()
 
 
 def clear():
